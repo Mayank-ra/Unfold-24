@@ -4,7 +4,7 @@ import { Box, TextField, Button, CircularProgress, Typography, Card, CardContent
 import axios from 'axios';
 import { Orbitron } from 'next/font/google'; // Import Handjet font
 import Web3 from 'web3';
-// import UploadButton from './components/UploadButton';
+import UploadButton from './components/UploadButton';
 
 
 const backgroundVideoUrl = 'https://res.cloudinary.com/ddrzwupca/video/upload/v1728355014/pxj2os0lc1ci7l32ado8.mp4';
@@ -184,6 +184,30 @@ const Page: React.FC = ()  => {
     }
   };
 
+  const mintNFTOnAptos = async (uid: string) => {
+    try {
+      // Prompt for the Aptos wallet address
+      const aptosWalletAddress = prompt("Enter your Aptos wallet address:");
+      if (!aptosWalletAddress) {
+        alert("Wallet address is required to mint on Aptos.");
+        return;
+      }
+  
+      // Call backend API to mint the NFT
+      const response = await axios.post("/api/mint-nft", {
+        uid,
+        aptosWalletAddress,
+      });
+  
+      console.log("Minted NFT on Aptos:", response.data);
+      alert("Successfully minted NFT on Aptos!");
+    } catch (error) {
+      console.error("Error minting NFT on Aptos:", error);
+      alert("Minting on Aptos failed!");
+    }
+  };
+  
+
   useEffect(() => {
     if (isSearching) {
       handleSearch();
@@ -227,6 +251,7 @@ const Page: React.FC = ()  => {
         src={backgroundVideoUrl}
       />
 
+
       {/* Overlay */}
       <Box
         sx={{
@@ -250,7 +275,7 @@ const Page: React.FC = ()  => {
           gap: 2,
         }}
       >
-        {/* <UploadButton /> */}
+        <UploadButton />
         <Button variant="contained" onClick={connectWallet}>
           {ethAddress ? `Connected: ${ethAddress.substring(0, 6)}...` : "Connect MetaMask"}
         </Button>
@@ -434,7 +459,25 @@ const Page: React.FC = ()  => {
                     transition: 'box-shadow 0.3s ease',
                   }}
                 >
-                  Mint as NFT
+                  Mint on base
+                </Button>
+
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  fullWidth
+                  onClick={() => mintNFTOnAptos(result.uid)}
+                  sx={{
+                    backgroundColor: 'rgba(23, 23, 23, 0.7)',
+                    '&:hover': {
+                      backgroundColor: 'rgba(255, 102, 0, 0.7)', // Orange glow for Aptos
+                      boxShadow: '0 0 10px rgba(255, 102, 0, 0.8)',
+                    },
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    transition: 'box-shadow 0.3s ease',
+                  }}
+                >
+                  Mint on Aptos
                 </Button>
               </Box>
             </Card>
